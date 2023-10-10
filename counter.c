@@ -18,6 +18,5 @@ int main()
 			GPIOE->ODR += (1 << 8); //Adds 1 every the output registers
 			while ((GPIOA->IDR & 1) == 1) {} // Doesn't count while the button is pressed
 		}
-	}
 	return 0;
 }
