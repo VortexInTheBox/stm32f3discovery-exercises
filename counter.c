@@ -10,13 +10,20 @@ int main()
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN | RCC_AHBENR_GPIOEEN; //Enable clock on A and E I/O Ports
 
 	GPIOA->MODER &= ~GPIO_MODER_MODER0; //Sets the GPIOA Port 0 as Input
-	GPIOE->MODER |= 0x55550000; //Sets the GPIOE Port 8,9,10,11,12,13,14,15 as Output
+	GPIOE->MODER |= 0x55550000;			//Sets the GPIOE Port 8,9,10,11,12,13,14,15 as Output
 	while (1)
 	{
-		if ((GPIOA->IDR & 1) == 1) //Checks if the button is pressed
+		if ((GPIOE->ODR & 0x0000ff00) != 0x0000ff00) //Checks if the counter goes in overflow (after the 16th bit they become reserved)
 		{
-			GPIOE->ODR += (1 << 8); //Adds 1 every the output registers
-			while ((GPIOA->IDR & 1) == 1) {} //Doesn't count while the button is pressed
+			if ((GPIOA->IDR & 1) == 1) //Checks if the button is pressed
+			{
+				GPIOE->ODR += (1 << 8); //Adds 1 every the output registers
+				while ((GPIOA->IDR & 1) == 1) {} //Doesn't count while the button is pressed
+			}
+		}
+		else
+		{
+			GPIOE->ODR &= ~(0x0000ff00); //Resets all LEDs
 		}
 	}
 	return 0;
